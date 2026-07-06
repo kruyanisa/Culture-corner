@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haunted Places Game</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a2e; color: white; text-align: center; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #16213e; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        input { padding: 10px; margin: 5px; width: 80%; border-radius: 5px; border: none; }
+        button { padding: 10px 20px; margin: 10px 5px; cursor: pointer; background-color: #e94560; color: white; border: none; border-radius: 5px; font-size: 16px; transition: 0.3s; }
+        button:hover { background-color: #d1304b; }
+        button:disabled { background-color: #555; cursor: not-allowed; }
+        .hidden { display: none; }
+        .choices button { width: 45%; margin: 5px; }
+        .story-box { background: #0f3460; padding: 15px; border-radius: 8px; margin-top: 20px; }
+        img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
+        .shake { animation: shake 0.5s; }
+        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container" id="loginPage">
+    <h2>👻 Haunted Places Game</h2>
+    <input type="text" id="studentName" placeholder="ชื่อ-สกุล" required>
+    <input type="text" id="studentRoom" placeholder="ห้อง (เช่น ม.1/1)" required>
+    <br><button onclick="startGame()">Start Game</button>
+</div>
+
+<div class="container hidden" id="gamePage">
+    <h2>Where am I? <span id="scoreDisplay">คะแนน: 10</span></h2>
+    <button onclick="playSound()" id="playBtn">🔊 ฟังเสียงผี</button>
+    
+    <div class="choices" id="choicesDiv"></div>
+
+    <div id="resultBox" class="story-box hidden">
+        <h3 id="resultTitle"></h3>
+        <img id="resultImg" src="" alt="Castle Image">
+        <p id="resultText"></p>
+        <button onclick="nextQuestion()" id="nextBtn">ข้อต่อไป ➡️</button>
+    </div>
+</div>
+
+<div class="container hidden" id="endPage">
+    <h2>🎉 จบเกม!</h2>
+    <h3 id="finalScoreText"></h3>
+    <button onclick="submitScore()" id="submitBtn">ส่งคะแนน</button>
+    <p id="statusMsg"></p>
+</div>
+
+<script>
+    const SCRIPT_URL = 'ใส่_URL_GOOGLE_APP_SCRIPT_ของคุณที่นี่'; 
+    const LESSON_NAME = "ม.1 Unit 3 Culture Corner";
+
+    const places = [
+        { id: 'edinburgh', name: 'Edinburgh Castle', img: 'img_edinburgh.jpg', audio: 'audio_edinburgh.mp3', text: 'Edinburgh Castle is in Edinburgh, Scotland. One ghost hasn\'t got a head. You can hear him play the battle drum at night.' },
+        { id: 'cardiff', name: 'Cardiff Castle', img: 'img_cardiff.jpg', audio: 'audio_cardiff.mp3', text: 'Cardiff Castle is in Wales. At 3:45 a.m. every morning you can hear big heavy doors open and close.' },
+        { id: 'dover', name: 'Dover Castle', img: 'img_dover.jpg', audio: 'audio_dover.mp3', text: 'Dover Castle is in England. There is the ghost of a woman in a long red dress on the stairs and strange noises.' },
+        { id: 'phrakhanong', name: 'Phra Khanong House', img: 'img_phrakhanong.jpg', audio: 'audio_phrakhanong.mp3', text: 'Phra Khanong House is in Bangkok, Thailand. At night, you can hear Mae Nak singing a sad lullaby and a baby crying.' }
+    ];
+
+    let currentQuestion = 0;
+    let score = 10;
+    let questions = [];
+    let currentAudio = new Audio();
+
+    function startGame() {
+        if (!document.getElementById('studentName').value || !document.getElementById('studentRoom').value) {
+            alert("กรุณากรอกชื่อและห้องครับ"); return;
+        }
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('gamePage').classList.remove('hidden');
+        
+        // สุ่มลำดับคำถาม
+        questions = [...places].sort(() => Math.random() - 0.5);
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        document.getElementById('resultBox').classList.add('hidden');
+        document.getElementById('playBtn').disabled = false;
+        currentAudio.src = questions[currentQuestion].audio;
+        
+        let choicesHTML = '';
+        let options = [...places].sort(() => Math.random() - 0.5); // สุ่มปุ่มตัวเลือก
+        options.forEach(opt => {
+            choicesHTML += `<button onclick="checkAnswer('${opt.id}', this)">${opt.name}</button>`;
+        });
+        document.getElementById('choicesDiv').innerHTML = choicesHTML;
+    }
+
+    function playSound() {
+        currentAudio.play();
+    }
+
+    function checkAnswer(selectedId, btnElement) {
+        if (selectedId === questions[currentQuestion].id) {
+            // ตอบถูก
+            currentAudio.pause();
+            document.getElementById('playBtn').disabled = true;
+            document.getElementById('choicesDiv').innerHTML = ''; // ซ่อนปุ่ม
+            
+            let data = questions[currentQuestion];
+            document.getElementById('resultTitle').innerText = data.name;
+            document.getElementById('resultImg').src = data.img;
+            document.getElementById('resultText').innerText = data.text;
+            
+            document.getElementById('resultBox').classList.remove('hidden');
+            
+            if (currentQuestion === questions.length - 1) {
+                document.getElementById('nextBtn').innerText = "ดูคะแนนรวม 🏆";
+            }
+        } else {
+            // ตอบผิด
+            score -= 1;
+            document.getElementById('scoreDisplay').innerText = `คะแนน: ${score}`;
+            btnElement.classList.add('shake');
+            btnElement.disabled = true;
+            setTimeout(() => btnElement.classList.remove('shake'), 500);
+        }
+    }
+
+    function nextQuestion() {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            loadQuestion();
+        } else {
+            document.getElementById('gamePage').classList.add('hidden');
+            document.getElementById('endPage').classList.remove('hidden');
+            document.getElementById('finalScoreText').innerText = `คะแนนของคุณคือ: ${score} / 10`;
+        }
+    }
+
+    function submitScore() {
+        const btn = document.getElementById('submitBtn');
+        const msg = document.getElementById('statusMsg');
+        btn.disabled = true;
+        btn.innerText = "กำลังส่งข้อมูล...";
+
+        let data = {
+            lesson_name: LESSON_NAME,
+            name: document.getElementById('studentName').value,
+            room: document.getElementById('studentRoom').value,
+            score: score,
+            total: 10
+        };
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(() => {
+            msg.innerText = "✅ ส่งคะแนนเรียบร้อยแล้ว!";
+            msg.style.color = "lightgreen";
+            btn.classList.add('hidden');
+        }).catch(error => {
+            msg.innerText = "❌ เกิดข้อผิดพลาดในการส่งข้อมูล";
+            msg.style.color = "red";
+            btn.disabled = false;
+            btn.innerText = "ลองส่งใหม่";
+        });
+    }
+</script>
+
+</body>
+</html>
