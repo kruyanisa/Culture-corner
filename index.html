@@ -1,57 +1,120 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haunted Places Game</title>
+    <title>ม.1 Unit 3 Culture corner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a2e; color: white; text-align: center; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: #16213e; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        input { padding: 10px; margin: 5px; width: 80%; border-radius: 5px; border: none; }
-        button { padding: 10px 20px; margin: 10px 5px; cursor: pointer; background-color: #e94560; color: white; border: none; border-radius: 5px; font-size: 16px; transition: 0.3s; }
-        button:hover { background-color: #d1304b; }
-        button:disabled { background-color: #555; cursor: not-allowed; }
-        .hidden { display: none; }
-        .choices button { width: 45%; margin: 5px; }
-        .story-box { background: #0f3460; padding: 15px; border-radius: 8px; margin-top: 20px; }
-        img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
-        .shake { animation: shake 0.5s; }
-        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+        * { box-sizing: border-box; }
+        body { background: #1e293b; font-family: 'Sarabun', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 15px 5px; min-height: 100vh; }
+        
+        .header-container { text-align: center; margin-bottom: 5px; width: 100%; }
+        .welcome-text { font-size: 12px; font-weight: 600; color: #0f172a; background: #e2e8f0; padding: 4px 10px; border-radius: 50px; display: inline-flex; gap: 8px; border: 2px solid #cbd5e1; }
+        .logout-btn { cursor: pointer; border: none; background: #ef4444; color: white; border-radius: 6px; padding: 2px 6px; font-size: 11px; font-family: 'Sarabun'; }
+
+        h2.title { color: #fff; background: #f97316; padding: 8px 15px; border-radius: 20px; margin: 0 0 15px 0; font-size: 16px; text-align: center; border: 2px solid #fff; width: 95%; max-width: 600px; }
+        
+        .app-container { width: 95%; max-width: 600px; background: #fff; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); padding: 20px; border: 2px solid #f97316; margin-bottom: 20px; text-align: center; }
+        
+        .step-title { font-size: 16px; font-weight: bold; color: #1e293b; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .btn { background: #3b82f6; color: white; border: none; border-radius: 8px; padding: 12px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; font-family: 'Sarabun'; transition: 0.2s; }
+        .btn:hover { background: #2563eb; }
+        .btn:disabled { background: #94a3b8; cursor: not-allowed; }
+        .btn-green { background: #10b981; }
+        .btn-green:hover { background: #059669; }
+        .btn-orange { background: #f97316; }
+        .btn-orange:hover { background: #ea580c; }
+        
+        .choices-grid { display: flex; flex-wrap: wrap; justify-content: space-between; margin-top: 15px; }
+        .choice-btn { width: 48%; margin-bottom: 10px; padding: 12px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 8px; font-weight: bold; font-family: 'Sarabun'; cursor: pointer; transition: 0.2s; color: #1e293b; }
+        .choice-btn:hover:not(:disabled) { background: #e2e8f0; border-color: #94a3b8; }
+        
+        #result-box { background: #f8fafc; padding: 15px; border-radius: 8px; border: 2px dashed #94a3b8; margin: 15px 0; font-family: 'Sarabun', sans-serif; text-align: left; display: none; }
+        #result-box img { width: 100%; border-radius: 8px; margin-bottom: 10px; }
+        #result-box h3 { margin: 0 0 5px 0; color: #ea580c; font-size: 18px; }
+        #result-box p { font-size: 14px; color: #334155; line-height: 1.6; margin: 0; }
+        
+        .shake { animation: shake 0.4s; background: #fca5a5 !important; border-color: #ef4444 !important; color: #7f1d1d !important; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); display: flex; justify-content: center; align-items: center; z-index: 2000; visibility: hidden; opacity: 0; transition: 0.3s; }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal-box { background: white; padding: 20px; border-radius: 15px; text-align: center; width: 85%; max-width: 320px; border: 4px solid #f97316; }
+        .modal-box h2 { color: #ea580c; margin-top: 0; font-size: 18px; }
+        .modal-box input { width: 100%; padding: 8px; margin-bottom: 10px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 12px; text-align: center; font-family: 'Sarabun'; }
+        .action-btn { width: 100%; padding: 10px; background: #f97316; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 5px; font-family: 'Sarabun';}
+        .action-btn.secondary { background: #64748b; }
+        .score-number { color: #ea580c; font-size: 35px; font-weight: 800; display: block; margin: 10px 0; }
     </style>
 </head>
 <body>
 
-<div class="container" id="loginPage">
-    <h2>👻 Haunted Places Game</h2>
-    <input type="text" id="studentName" placeholder="ชื่อ-สกุล" required>
-    <input type="text" id="studentRoom" placeholder="ห้อง (เช่น ม.1/1)" required>
-    <br><button onclick="startGame()">Start Game</button>
-</div>
-
-<div class="container hidden" id="gamePage">
-    <h2>Where am I? <span id="scoreDisplay">คะแนน: 10</span></h2>
-    <button onclick="playSound()" id="playBtn">🔊 ฟังเสียงผี</button>
-    
-    <div class="choices" id="choicesDiv"></div>
-
-    <div id="resultBox" class="story-box hidden">
-        <h3 id="resultTitle"></h3>
-        <img id="resultImg" src="" alt="Castle Image">
-        <p id="resultText"></p>
-        <button onclick="nextQuestion()" id="nextBtn">ข้อต่อไป ➡️</button>
+    <div class="header-container" id="welcome-section" style="display: none;">
+        <div class="welcome-text">
+            👤 <span id="show_name"></span> | 🏫 <span id="show_room"></span> | 🆔 <span id="show_id"></span>
+            <button class="logout-btn" onclick="logoutUser()">สลับบัญชี</button>
+        </div>
     </div>
-</div>
 
-<div class="container hidden" id="endPage">
-    <h2>🎉 จบเกม!</h2>
-    <h3 id="finalScoreText"></h3>
-    <button onclick="submitScore()" id="submitBtn">ส่งคะแนน</button>
-    <p id="statusMsg"></p>
-</div>
+    <h2 class="title">📍 ม.1 Unit 3 Culture corner</h2>
+
+    <div class="app-container" id="game-container" style="display: none;">
+        <div class="step-title">
+            <span>🎧 Listen and Guess</span>
+            <span style="color: #10b981; font-size: 14px;">คะแนน: <span id="scoreDisplay">0</span>/4</span>
+        </div>
+        
+        <button class="btn" id="playBtn" onclick="playSound()" style="font-size: 18px; padding: 15px;">🔊 กดฟังเสียงปริศนา</button>
+        
+        <div class="choices-grid" id="choicesDiv"></div>
+
+        <div id="result-box">
+            <h3 id="resultTitle"></h3>
+            <img id="resultImg" src="" alt="Place">
+            <p id="resultText"></p>
+        </div>
+        
+        <button class="btn btn-green" id="nextBtn" style="display: none;" onclick="nextQuestion()">ข้อต่อไป ➡️</button>
+        <button class="btn btn-orange" id="submitBtn" style="display: none;" onclick="prepareSubmit()">✅ ส่งคะแนน</button>
+    </div>
+
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-box">
+            <h2>👋 ลงชื่อก่อนเริ่มกิจกรรม</h2>
+            <input type="text" id="m_name" placeholder="ชื่อ - นามสกุล" autocomplete="name">
+            <input type="text" id="m_room" placeholder="ชั้น/ห้อง (เช่น 1/1)">
+            <input type="text" id="m_id" placeholder="รหัสนักเรียน (5 หลัก)" maxlength="5">
+            <button class="action-btn" onclick="saveUserDataAndStart()">🚀 ยืนยันและเริ่มเกม</button>
+            <div id="modal-err" style="color:#ef4444; font-size:12px; margin-top:10px; display:none;"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="scoreModal">
+        <div class="modal-box">
+            <h2>🎉 Finished!</h2>
+            <div style="font-size: 16px; font-weight: bold;">คะแนนของคุณ</div>
+            <span class="score-number" id="finalScore">0 / 4</span>
+            <div id="saveStatus" style="font-size: 12px; color: #ea580c; font-weight: bold; margin-bottom: 10px; display: none;">⏳ กำลังบันทึก...</div>
+            <button class="action-btn" id="playAgainBtn" onclick="restartApp()" style="display:none;">🔄 เล่นอีกครั้ง</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-box">
+            <h2>❓ เปลี่ยนชื่อผู้เล่น</h2>
+            <div style="font-size: 14px; margin-bottom: 20px;">ข้อมูลเดิมจะถูกลบออกทั้งหมด</div>
+            <button class="action-btn" onclick="confirmLogout()">✔️ ยืนยัน</button>
+            <button class="action-btn secondary" onclick="closeLogout()">❌ ยกเลิก</button>
+        </div>
+    </div>
 
 <script>
-    const SCRIPT_URL = 'ใส่_URL_GOOGLE_APP_SCRIPT_ของคุณที่นี่'; 
-    const LESSON_NAME = "ม.1 Unit 3 Culture Corner";
+    // URL ตรงกับโปรเจกต์เดิมของคุณเพื่อเก็บคะแนนรวมกันได้ (หรือเปลี่ยนใหม่ถ้าแยกชีต)
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxd_UGE1ZY_1dcB3B7l0Vy8azxhuuFoc_kftJ7QZ1Nc4XIaXGKF9RPs8WxhZ0K5VyVN/exec';
+    const LESSON_NAME = "ม.1 Unit 3 Culture corner";
 
     const places = [
         { id: 'edinburgh', name: 'Edinburgh Castle', img: 'img_edinburgh.jpg', audio: 'audio_edinburgh.mp3', text: 'Edinburgh Castle is in Edinburgh, Scotland. One ghost hasn\'t got a head. You can hear him play the battle drum at night.' },
@@ -60,109 +123,168 @@
         { id: 'phrakhanong', name: 'Phra Khanong House', img: 'img_phrakhanong.jpg', audio: 'audio_phrakhanong.mp3', text: 'Phra Khanong House is in Bangkok, Thailand. At night, you can hear Mae Nak singing a sad lullaby and a baby crying.' }
     ];
 
+    let studentData = { name: "", room: "", id: "" };
     let currentQuestion = 0;
-    let score = 10;
+    let score = 0;
     let questions = [];
     let currentAudio = new Audio();
+    let isFirstAttempt = true;
+
+    window.onload = () => {
+        document.getElementById('m_room').addEventListener('blur', function() { this.value = autoFormatRoom(this.value); });
+        
+        if(localStorage.getItem('studentName')) {
+            studentData.name = localStorage.getItem('studentName');
+            studentData.room = localStorage.getItem('studentRoom');
+            studentData.id = localStorage.getItem('studentId');
+            updateHeader();
+            startGame();
+        } else {
+            document.getElementById('loginModal').classList.add('active');
+        }
+    };
+
+    function autoFormatRoom(val) {
+        let nums = val.trim().match(/\d+/g);
+        if (nums && nums.length >= 2) return `ม.${nums[0]}/${nums[1]}`;
+        if (nums && nums.length === 1) return `ม.${nums[0]}`;
+        return val.trim();
+    }
+
+    function updateHeader() {
+        document.getElementById('show_name').innerText = studentData.name;
+        document.getElementById('show_room').innerText = studentData.room;
+        document.getElementById('show_id').innerText = studentData.id;
+        document.getElementById('welcome-section').style.display = 'block';
+    }
+
+    function logoutUser() { document.getElementById('logoutModal').classList.add('active'); }
+    function closeLogout() { document.getElementById('logoutModal').classList.remove('active'); }
+    function confirmLogout() {
+        localStorage.clear(); studentData = { name: "", room: "", id: "" };
+        document.getElementById('welcome-section').style.display = 'none';
+        document.getElementById('game-container').style.display = 'none';
+        closeLogout(); 
+        document.getElementById('loginModal').classList.add('active');
+    }
+
+    function saveUserDataAndStart() {
+        let n = document.getElementById('m_name').value.trim(), r = autoFormatRoom(document.getElementById('m_room').value), i = document.getElementById('m_id').value.trim();
+        let err = document.getElementById('modal-err');
+        if(!n || !r || i.length !== 5) { err.innerText = "กรุณากรอกให้ครบ (รหัส 5 หลัก)"; err.style.display = 'block'; return; }
+        err.style.display = 'none';
+        
+        studentData = { name: n, room: r, id: i };
+        localStorage.setItem('studentName', n); 
+        localStorage.setItem('studentRoom', r); 
+        localStorage.setItem('studentId', i);
+        
+        document.getElementById('loginModal').classList.remove('active');
+        updateHeader(); 
+        startGame();
+    }
 
     function startGame() {
-        if (!document.getElementById('studentName').value || !document.getElementById('studentRoom').value) {
-            alert("กรุณากรอกชื่อและห้องครับ"); return;
-        }
-        document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('gamePage').classList.remove('hidden');
-        
-        // สุ่มลำดับคำถาม
+        document.getElementById('game-container').style.display = 'block';
+        score = 0;
+        currentQuestion = 0;
+        document.getElementById('scoreDisplay').innerText = score;
         questions = [...places].sort(() => Math.random() - 0.5);
         loadQuestion();
     }
 
     function loadQuestion() {
-        document.getElementById('resultBox').classList.add('hidden');
+        isFirstAttempt = true;
+        document.getElementById('result-box').style.display = 'none';
+        document.getElementById('nextBtn').style.display = 'none';
         document.getElementById('playBtn').disabled = false;
         currentAudio.src = questions[currentQuestion].audio;
         
         let choicesHTML = '';
-        let options = [...places].sort(() => Math.random() - 0.5); // สุ่มปุ่มตัวเลือก
+        let options = [...places].sort(() => Math.random() - 0.5);
         options.forEach(opt => {
-            choicesHTML += `<button onclick="checkAnswer('${opt.id}', this)">${opt.name}</button>`;
+            choicesHTML += `<button class="choice-btn" onclick="checkAnswer('${opt.id}', this)">${opt.name}</button>`;
         });
         document.getElementById('choicesDiv').innerHTML = choicesHTML;
+        document.getElementById('choicesDiv').style.display = 'flex';
     }
 
-    function playSound() {
-        currentAudio.play();
-    }
+    function playSound() { currentAudio.play(); }
 
     function checkAnswer(selectedId, btnElement) {
         if (selectedId === questions[currentQuestion].id) {
-            // ตอบถูก
             currentAudio.pause();
+            if (isFirstAttempt) score += 1;
+            
+            document.getElementById('scoreDisplay').innerText = score;
             document.getElementById('playBtn').disabled = true;
-            document.getElementById('choicesDiv').innerHTML = ''; // ซ่อนปุ่ม
+            document.getElementById('choicesDiv').style.display = 'none';
             
             let data = questions[currentQuestion];
             document.getElementById('resultTitle').innerText = data.name;
             document.getElementById('resultImg').src = data.img;
             document.getElementById('resultText').innerText = data.text;
-            
-            document.getElementById('resultBox').classList.remove('hidden');
+            document.getElementById('result-box').style.display = 'block';
             
             if (currentQuestion === questions.length - 1) {
-                document.getElementById('nextBtn').innerText = "ดูคะแนนรวม 🏆";
+                document.getElementById('submitBtn').style.display = 'block';
+            } else {
+                document.getElementById('nextBtn').style.display = 'block';
             }
         } else {
-            // ตอบผิด
-            score -= 1;
-            document.getElementById('scoreDisplay').innerText = `คะแนน: ${score}`;
+            isFirstAttempt = false; 
             btnElement.classList.add('shake');
             btnElement.disabled = true;
-            setTimeout(() => btnElement.classList.remove('shake'), 500);
+            setTimeout(() => btnElement.classList.remove('shake'), 400);
         }
     }
 
     function nextQuestion() {
         currentQuestion++;
-        if (currentQuestion < questions.length) {
-            loadQuestion();
-        } else {
-            document.getElementById('gamePage').classList.add('hidden');
-            document.getElementById('endPage').classList.remove('hidden');
-            document.getElementById('finalScoreText').innerText = `คะแนนของคุณคือ: ${score} / 10`;
-        }
+        loadQuestion();
     }
 
-    function submitScore() {
-        const btn = document.getElementById('submitBtn');
-        const msg = document.getElementById('statusMsg');
-        btn.disabled = true;
-        btn.innerText = "กำลังส่งข้อมูล...";
+    function prepareSubmit() {
+        document.getElementById('finalScore').innerText = `${score} / 4`;
+        document.getElementById('scoreModal').classList.add('active'); 
+        submitScore();
+    }
 
-        let data = {
-            lesson_name: LESSON_NAME,
-            name: document.getElementById('studentName').value,
-            room: document.getElementById('studentRoom').value,
-            score: score,
-            total: 10
+    async function submitScore() {
+        let stat = document.getElementById('saveStatus'), playBtn = document.getElementById('playAgainBtn');
+        stat.style.display = 'block'; stat.innerText = "⏳ กำลังบันทึกคะแนน..."; playBtn.style.display = 'none';
+        
+        const payload = { 
+            name: studentData.name, 
+            room: studentData.room, 
+            studentId: "'" + studentData.id, 
+            lesson: LESSON_NAME, 
+            score: score, 
+            maxScore: 4, 
+            _t: new Date().getTime() 
         };
+        
+        try {
+            await fetch(SCRIPT_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                body: JSON.stringify(payload), 
+                headers: { "Content-Type": "text/plain;charset=utf-8" } 
+            });
+            stat.innerText = '✅ บันทึกคะแนนเรียบร้อย!'; 
+            stat.style.color = '#10b981';
+        } catch(e) { 
+            stat.innerText = '❌ ส่งไม่สำเร็จ'; 
+            stat.style.color = '#ef4444'; 
+        }
+        playBtn.style.display = 'inline-block';
+    }
 
-        fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).then(() => {
-            msg.innerText = "✅ ส่งคะแนนเรียบร้อยแล้ว!";
-            msg.style.color = "lightgreen";
-            btn.classList.add('hidden');
-        }).catch(error => {
-            msg.innerText = "❌ เกิดข้อผิดพลาดในการส่งข้อมูล";
-            msg.style.color = "red";
-            btn.disabled = false;
-            btn.innerText = "ลองส่งใหม่";
-        });
+    function restartApp() {
+        document.getElementById('scoreModal').classList.remove('active');
+        document.getElementById('submitBtn').style.display = 'none';
+        startGame(); 
     }
 </script>
-
 </body>
 </html>
